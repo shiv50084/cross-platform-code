@@ -54,11 +54,14 @@ includedir = $(prefix)/include
 libdir = $(exec_prefix)/lib
 
 SOURCE_FILES_STR = $(wildcard $(srcdir)/lib/str/*.c)
+SOURCE_FILES_BYTE = $(wildcard $(srcdir)/lib/byte/*.c)
 
 HEADERS_STR = $(incdir)/str/*.h
+HEADERS_BYTE = $(incdir)/byte/*.h
 
 # The names of the libraries to be built
 LIB_STR = str
+LIB_BYTE = byte
 
 CC ?= gcc
 
@@ -92,19 +95,26 @@ LIBNAME_EXT = so
 endif
 
 LIB_STR_LIBNAME = ${LIBNAME_PREFIX}${LIB_STR}.${LIBNAME_EXT}
+LIB_BYTE_LIBNAME = ${LIBNAME_PREFIX}${LIB_BYTE}.${LIBNAME_EXT}
 
 LIB_STR_TARGET = ${blddir}/${LIB_STR_LIBNAME}.${VERSION}
+LIB_BYTE_TARGET = ${blddir}/${LIB_BYTE_LIBNAME}.${VERSION}
 
 #FLAGS_EXE = $(LDFLAGS) -I ${incdir} -lpthread -L ${blddir}
 #FLAGS_EXES = $(LDFLAGS) -I ${incdir} ${START_GROUP} -lpthread -lssl -lcrypto ${END_GROUP} -L ${blddir}
 
 ifeq ($(OSTYPE),CYGWIN_NT)
-CCFLAGS_SO_STR = -g $(CFLAGS) -I $(incdir)/str/ -Os -Wall -fvisibility=hidden
 LDFLAGS_CYGWIN = -Wl,--export-all-symbols -Wl,--enable-auto-import
+
+CCFLAGS_SO_STR = -g $(CFLAGS) -I $(incdir)/str/ -Os -Wall -fvisibility=hidden
+CCFLAGS_SO_BYTE = -g $(CFLAGS) -I $(incdir)/byte/ -Os -Wall -fvisibility=hidden
 LDFLAGS_STR = $(LDFLAGS) -shared -Wl,--no-whole-archive -lpthread $(LDFLAGS_CYGWIN)
+LDFLAGS_BYTE = $(LDFLAGS) -shared -Wl,--no-whole-archive -lpthread $(LDFLAGS_CYGWIN)
 else
 CCFLAGS_SO_STR = -g -fPIC $(CFLAGS) -I $(incdir)/str/ -Os -Wall -fvisibility=hidden
+CCFLAGS_SO_BYTE = -g -fPIC $(CFLAGS) -I $(incdir)/byte/ -Os -Wall -fvisibility=hidden
 LDFLAGS_STR = $(LDFLAGS) -shared -lpthread
+LDFLAGS_BYTE = $(LDFLAGS) -shared -lpthread
 endif
 
 ifeq ($(OSTYPE),Linux)
@@ -112,23 +122,27 @@ ifeq ($(OSTYPE),Linux)
 EXTRA_LIB = -ldl
 
 LDFLAGS_STR += -Wl,-soname,${LIB_STR_LIBNAME}.${MAJOR_VERSION}
+LDFLAGS_BYTE += -Wl,-soname,${LIB_BYTE_LIBNAME}.${MAJOR_VERSION}
 
 else ifeq ($(OSTYPE),Darwin)
 
 EXTRA_LIB = -ldl
 
 CCFLAGS_SO_STR += -dynamiclib -Wno-deprecated-declarations -DUSE_NAMED_SEMAPHORES
+CCFLAGS_SO_BYTE += -dynamiclib -Wno-deprecated-declarations -DUSE_NAMED_SEMAPHORES
 LDFLAGS_STR += -Wl,-install_name,${LIB_STR_LIBNAME}.${MAJOR_VERSION}
+LDFLAGS_BYTE += -Wl,-install_name,${LIB_BYTE_LIBNAME}.${MAJOR_VERSION}
 
 else ifeq ($(OSTYPE),CYGWIN_NT)
 
 LDFLAGS_STR += -Wl,--out-implib=${blddir}/lib$(LIB_STR).${LIBNAME_EXT}.a
+LDFLAGS_BYTE += -Wl,--out-implib=${blddir}/lib$(LIB_BYTE).${LIBNAME_EXT}.a
 
 endif
 
 all: build
 
-build: | mkdir ${LIB_STR_TARGET}
+build: | mkdir ${LIB_STR_TARGET} ${LIB_BYTE_TARGET}
 
 clean:
 	rm -rf ${blddir}/*
@@ -143,6 +157,11 @@ ${LIB_STR_TARGET}: ${SOURCE_FILES_STR} ${HEADERS_STR}
 	-ln -s ${LIB_STR_LIBNAME}.${VERSION}  ${blddir}/${LIB_STR_LIBNAME}.${MAJOR_VERSION}
 	-ln -s ${LIB_STR_LIBNAME}.${MAJOR_VERSION} ${blddir}/${LIB_STR_LIBNAME}
 
+${LIB_BYTE_TARGET}: ${SOURCE_FILES_BYTE} ${HEADERS_BYTE}
+	${CC} ${CCFLAGS_SO_BYTE} -o $@ ${SOURCE_FILES_BYTE} ${LDFLAGS_BYTE}
+	-ln -s ${LIB_BYTE_LIBNAME}.${VERSION}  ${blddir}/${LIB_BYTE_LIBNAME}.${MAJOR_VERSION}
+	-ln -s ${LIB_BYTE_LIBNAME}.${MAJOR_VERSION} ${blddir}/${LIB_BYTE_LIBNAME}
+
 strip_options:
 	$(eval INSTALL_OPTS := -s)
 
@@ -152,24 +171,32 @@ install: build
 	$(INSTALL_PROGRAM) -d $(DESTDIR)${libdir}
 	$(INSTALL_PROGRAM) -d $(DESTDIR)${includedir}
 	$(INSTALL_DATA) ${INSTALL_OPTS} ${LIB_STR_TARGET} $(DESTDIR)${libdir}
+	$(INSTALL_DATA) ${INSTALL_OPTS} ${LIB_BYTE_TARGET} $(DESTDIR)${libdir}
 ifeq ($(OSTYPE),CYGWIN_NT)
 	ln -fs ${LIB_STR_LIBNAME}.${VERSION}  $(DESTDIR)${libdir}/${LIB_STR_LIBNAME}.${MAJOR_VERSION}
+	ln -fs ${LIB_BYTE_LIBNAME}.${VERSION}  $(DESTDIR)${libdir}/${LIB_BYTE_LIBNAME}.${MAJOR_VERSION}
 	$(INSTALL_DATA) ${blddir}/lib*.dll.a $(DESTDIR)${libdir}
 else
 	/sbin/ldconfig $(DESTDIR)${libdir}
 endif
 	ln -fs ${LIB_STR_LIBNAME}.${MAJOR_VERSION} $(DESTDIR)${libdir}/${LIB_STR_LIBNAME}
+	ln -fs ${LIB_BYTE_LIBNAME}.${MAJOR_VERSION} $(DESTDIR)${libdir}/${LIB_BYTE_LIBNAME}
 	$(INSTALL_DATA) ${HEADERS_STR} $(DESTDIR)${includedir}
+	$(INSTALL_DATA) ${HEADERS_BYTE} $(DESTDIR)${includedir}
 
 uninstall:
 	rm -f $(DESTDIR)${libdir}/${LIB_STR_LIBNAME}.*
+	rm -f $(DESTDIR)${libdir}/${LIB_BYTE_LIBNAME}.*
 ifeq ($(OSTYPE),CYGWIN_NT)
 	rm -f $(DESTDIR)${libdir}/*${LIB_STR}*.dll.a
+	rm -f $(DESTDIR)${libdir}/*${LIB_BYTE}*.dll.a
 else
 	/sbin/ldconfig $(DESTDIR)${libdir}
 endif
 	rm -f $(DESTDIR)${libdir}/${LIB_STR_LIBNAME}
+	rm -f $(DESTDIR)${libdir}/${LIB_BYTE_LIBNAME}
 	rm -f $(DESTDIR)${includedir}/${HEADERS_STR}
+	rm -f $(DESTDIR)${includedir}/${HEADERS_BYTE}
 
 html:
 	-mkdir -p ${blddir}/doc
