@@ -28,6 +28,6 @@ string:
   return fmt_str(dest,s);
 }
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__llvm__)
 size_t fmt_escapecharhtml(char* dest,uint32_t ch) __attribute__((__alias__("fmt_escapecharxml")));
 #endif
