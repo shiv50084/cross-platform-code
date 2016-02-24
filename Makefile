@@ -5,6 +5,9 @@ ifndef release.version
     release.version = 0.0.1
 endif
 
+# TODO
+# * Static libraries instead of shared?
+
 SYSTEM := $(shell uname -s)
 MACHINE := $(shell uname -m)
 
