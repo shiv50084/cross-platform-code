@@ -157,6 +157,12 @@ all: build
 
 build: | mkdir ${LIB_STR_TARGET} ${LIB_BYTE_TARGET} ${LIB_UINT_TARGET}
 
+${LIB_STR}: | mkdir ${LIB_STR_TARGET}
+
+${LIB_BYTE}: | mkdir ${LIB_BYTE_TARGET}
+
+${LIB_UINT}: | mkdir ${LIB_UINT_TARGET}
+
 clean:
 	rm -rf ${blddir}/*
 
