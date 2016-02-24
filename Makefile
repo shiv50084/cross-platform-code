@@ -126,7 +126,7 @@ CCFLAGS_SO_FMT = -g $(CFLAGS) -I $(incdir)/byte/ -I $(incdir)/fmt/ -Os -Wall -fv
 LDFLAGS_STR = $(LDFLAGS) -shared -Wl,--no-whole-archive -lpthread $(LDFLAGS_CYGWIN)
 LDFLAGS_BYTE = $(LDFLAGS) -shared -Wl,--no-whole-archive -lpthread $(LDFLAGS_CYGWIN)
 LDFLAGS_UINT = $(LDFLAGS) -shared -Wl,--no-whole-archive -lpthread $(LDFLAGS_CYGWIN)
-LDFLAGS_FMT = $(LDFLAGS) -shared -Wl,--no-whole-archive -lpthread $(LDFLAGS_CYGWIN)
+LDFLAGS_FMT = $(LDFLAGS) -shared -Wl,--no-whole-archive -L ${blddir} -lbyte -lpthread $(LDFLAGS_CYGWIN)
 else
 CCFLAGS_SO_STR = -g -fPIC $(CFLAGS) -I $(incdir)/str/ -Os -Wall -fvisibility=hidden
 CCFLAGS_SO_BYTE = -g -fPIC $(CFLAGS) -I $(incdir)/byte/ -Os -Wall -fvisibility=hidden
@@ -151,10 +151,10 @@ else ifeq ($(OSTYPE),Darwin)
 
 EXTRA_LIB = -ldl
 
-CCFLAGS_SO_STR += -dynamiclib -Wno-deprecated-declarations -DUSE_NAMED_SEMAPHORES
-CCFLAGS_SO_BYTE += -dynamiclib -Wno-deprecated-declarations -DUSE_NAMED_SEMAPHORES
-CCFLAGS_SO_UINT += -dynamiclib -Wno-deprecated-declarations -DUSE_NAMED_SEMAPHORES
-CCFLAGS_SO_FMT += -dynamiclib -Wno-deprecated-declarations -DUSE_NAMED_SEMAPHORES
+CCFLAGS_SO_STR += -dynamiclib -Wno-deprecated-declarations -undefined dynamic_lookup -DUSE_NAMED_SEMAPHORES
+CCFLAGS_SO_BYTE += -dynamiclib -Wno-deprecated-declarations -undefined dynamic_lookup -DUSE_NAMED_SEMAPHORES
+CCFLAGS_SO_UINT += -dynamiclib -Wno-deprecated-declarations -undefined dynamic_lookup -DUSE_NAMED_SEMAPHORES
+CCFLAGS_SO_FMT += -dynamiclib -Wno-deprecated-declarations -undefined dynamic_lookup -DUSE_NAMED_SEMAPHORES
 LDFLAGS_STR += -Wl,-install_name,${LIB_STR_LIBNAME}.${MAJOR_VERSION}
 LDFLAGS_BYTE += -Wl,-install_name,${LIB_BYTE_LIBNAME}.${MAJOR_VERSION}
 LDFLAGS_UINT += -Wl,-install_name,${LIB_UINT_LIBNAME}.${MAJOR_VERSION}
@@ -179,7 +179,7 @@ ${LIB_BYTE}: | mkdir ${LIB_BYTE_TARGET}
 
 ${LIB_UINT}: | mkdir ${LIB_UINT_TARGET}
 
-${LIB_FMT}: | mkdir ${LIB_FMT_TARGET}
+${LIB_FMT}: | mkdir ${LIB_BYTE_TARGET} ${LIB_FMT_TARGET}
 
 clean:
 	rm -rf ${blddir}/*
