@@ -65,6 +65,7 @@ SOURCE_FILES_UINT = $(wildcard $(srcdir)/lib/uint/*.c)
 SOURCE_FILES_FMT = $(wildcard $(srcdir)/lib/fmt/*.c)
 SOURCE_FILES_STRALLOC = $(wildcard $(srcdir)/lib/stralloc/*.c)
 SOURCE_FILES_TAI = $(wildcard $(srcdir)/lib/tai/*.c)
+SOURCE_FILES_TAIA = $(wildcard $(srcdir)/lib/taia/*.c)
 
 HEADERS_STR = $(incdir)/str/*.h
 HEADERS_BYTE = $(incdir)/byte/*.h
@@ -72,6 +73,7 @@ HEADERS_UINT = $(incdir)/uint/*.h
 HEADERS_FMT = $(incdir)/fmt/*.h
 HEADERS_STRALLOC = $(incdir)/stralloc/*.h
 HEADERS_TAI = $(incdir)/tai/*.h
+HEADERS_TAIA = $(incdir)/taia/*.h
 
 # The names of the libraries to be built
 LIB_STR = str
@@ -80,6 +82,7 @@ LIB_UINT = uint
 LIB_FMT = fmt
 LIB_STRALLOC = stralloc
 LIB_TAI = tai
+LIB_TAIA = taia
 
 CC ?= gcc
 
@@ -118,6 +121,7 @@ LIB_UINT_LIBNAME = ${LIBNAME_PREFIX}${LIB_UINT}.${LIBNAME_EXT}
 LIB_FMT_LIBNAME = ${LIBNAME_PREFIX}${LIB_FMT}.${LIBNAME_EXT}
 LIB_STRALLOC_LIBNAME = ${LIBNAME_PREFIX}${LIB_STRALLOC}.${LIBNAME_EXT}
 LIB_TAI_LIBNAME = ${LIBNAME_PREFIX}${LIB_TAI}.${LIBNAME_EXT}
+LIB_TAIA_LIBNAME = ${LIBNAME_PREFIX}${LIB_TAIA}.${LIBNAME_EXT}
 
 LIB_STR_TARGET = ${blddir}/${LIB_STR_LIBNAME}.${VERSION}
 LIB_BYTE_TARGET = ${blddir}/${LIB_BYTE_LIBNAME}.${VERSION}
@@ -125,6 +129,7 @@ LIB_UINT_TARGET = ${blddir}/${LIB_UINT_LIBNAME}.${VERSION}
 LIB_FMT_TARGET = ${blddir}/${LIB_FMT_LIBNAME}.${VERSION}
 LIB_STRALLOC_TARGET = ${blddir}/${LIB_STRALLOC_LIBNAME}.${VERSION}
 LIB_TAI_TARGET = ${blddir}/${LIB_TAI_LIBNAME}.${VERSION}
+LIB_TAIA_TARGET = ${blddir}/${LIB_TAIA_LIBNAME}.${VERSION}
 
 #FLAGS_EXE = $(LDFLAGS) -I ${incdir} -lpthread -L ${blddir}
 #FLAGS_EXES = $(LDFLAGS) -I ${incdir} ${START_GROUP} -lpthread -lssl -lcrypto ${END_GROUP} -L ${blddir}
@@ -138,12 +143,14 @@ CCFLAGS_SO_UINT = -g $(CFLAGS) -I $(incdir)/uint/ -Os -Wall -fvisibility=hidden
 CCFLAGS_SO_FMT = -g $(CFLAGS) -I $(incdir)/byte/ -I $(incdir)/fmt/ -Os -Wall -fvisibility=hidden
 CCFLAGS_SO_STRALLOC = -g $(CFLAGS) -I $(incdir)/byte/ -I $(incdir)/str/ -I $(incdir)/fmt/ -I $(incdir)/stralloc/ -Os -Wall -fvisibility=hidden
 CCFLAGS_SO_TAI = -g $(CFLAGS) -I $(incdir)/uint/ -I $(incdir)/tai/ -Os -Wall -fvisibility=hidden
+CCFLAGS_SO_TAIA = -g $(CFLAGS) -I $(incdir)/uint/ -I $(incdir)/tai/ -I $(incdir)/taia/ -Os -Wall -fvisibility=hidden
 LDFLAGS_STR = $(LDFLAGS) -shared -Wl,--no-whole-archive -lpthread $(LDFLAGS_CYGWIN)
 LDFLAGS_BYTE = $(LDFLAGS) -shared -Wl,--no-whole-archive -lpthread $(LDFLAGS_CYGWIN)
 LDFLAGS_UINT = $(LDFLAGS) -shared -Wl,--no-whole-archive -lpthread $(LDFLAGS_CYGWIN)
 LDFLAGS_FMT = $(LDFLAGS) -shared -Wl,--no-whole-archive -L ${blddir} -lbyte -lpthread $(LDFLAGS_CYGWIN)
 LDFLAGS_STRALLOC = $(LDFLAGS) -shared -Wl,--no-whole-archive -L ${blddir} -lbyte -lstr -lfmt -lpthread $(LDFLAGS_CYGWIN)
 LDFLAGS_TAI = $(LDFLAGS) -shared -Wl,--no-whole-archive -L ${blddir} -lpthread $(LDFLAGS_CYGWIN)
+LDFLAGS_TAIA = $(LDFLAGS) -shared -Wl,--no-whole-archive -L ${blddir} -lpthread $(LDFLAGS_CYGWIN)
 else
 CCFLAGS_SO_STR = -g -fPIC $(CFLAGS) -I $(incdir)/str/ -Os -Wall -fvisibility=hidden
 CCFLAGS_SO_BYTE = -g -fPIC $(CFLAGS) -I $(incdir)/byte/ -Os -Wall -fvisibility=hidden
@@ -151,12 +158,14 @@ CCFLAGS_SO_UINT = -g -fPIC $(CFLAGS) -I $(incdir)/uint/ -Os -Wall -fvisibility=h
 CCFLAGS_SO_FMT = -g -fPIC $(CFLAGS) -I $(incdir)/byte/ -I $(incdir)/fmt/ -Os -Wall -fvisibility=hidden
 CCFLAGS_SO_STRALLOC = -g -fPIC $(CFLAGS) -I $(incdir)/byte/ -I $(incdir)/str/ -I $(incdir)/fmt/ -I $(incdir)/stralloc/ -Os -Wall -fvisibility=hidden
 CCFLAGS_SO_TAI = -g -fPIC $(CFLAGS) -I $(incdir)/uint/ -I $(incdir)/tai/ -Os -Wall -fvisibility=hidden
+CCFLAGS_SO_TAIA = -g -fPIC $(CFLAGS) -I $(incdir)/uint/ -I $(incdir)/tai/ -I $(incdir)/taia/ -Os -Wall -fvisibility=hidden
 LDFLAGS_STR = $(LDFLAGS) -shared -lpthread
 LDFLAGS_BYTE = $(LDFLAGS) -shared -lpthread
 LDFLAGS_UINT = $(LDFLAGS) -shared -lpthread
 LDFLAGS_FMT = $(LDFLAGS) -shared -lpthread
 LDFLAGS_STRALLOC = $(LDFLAGS) -shared -lpthread
 LDFLAGS_TAI = $(LDFLAGS) -shared -lpthread
+LDFLAGS_TAIA = $(LDFLAGS) -shared -lpthread
 endif
 
 ifeq ($(OSTYPE),Linux)
@@ -169,6 +178,7 @@ LDFLAGS_UINT += -Wl,-soname,${LIB_UINT_LIBNAME}.${MAJOR_VERSION}
 LDFLAGS_FMT += -Wl,-soname,${LIB_FMT_LIBNAME}.${MAJOR_VERSION}
 LDFLAGS_STRALLOC += -Wl,-soname,${LIB_STRALLOC_LIBNAME}.${MAJOR_VERSION}
 LDFLAGS_TAI += -Wl,-soname,${LIB_TAI_LIBNAME}.${MAJOR_VERSION}
+LDFLAGS_TAIA += -Wl,-soname,${LIB_TAIA_LIBNAME}.${MAJOR_VERSION}
 
 else ifeq ($(OSTYPE),Darwin)
 
@@ -180,12 +190,14 @@ CCFLAGS_SO_UINT += -dynamiclib -Wno-deprecated-declarations -undefined dynamic_l
 CCFLAGS_SO_FMT += -dynamiclib -Wno-deprecated-declarations -undefined dynamic_lookup -DUSE_NAMED_SEMAPHORES
 CCFLAGS_SO_STRALLOC += -dynamiclib -Wno-deprecated-declarations -undefined dynamic_lookup -DUSE_NAMED_SEMAPHORES
 CCFLAGS_SO_TAI += -dynamiclib -Wno-deprecated-declarations -undefined dynamic_lookup -DUSE_NAMED_SEMAPHORES
+CCFLAGS_SO_TAIA += -dynamiclib -Wno-deprecated-declarations -undefined dynamic_lookup -DUSE_NAMED_SEMAPHORES
 LDFLAGS_STR += -Wl,-install_name,${LIB_STR_LIBNAME}.${MAJOR_VERSION}
 LDFLAGS_BYTE += -Wl,-install_name,${LIB_BYTE_LIBNAME}.${MAJOR_VERSION}
 LDFLAGS_UINT += -Wl,-install_name,${LIB_UINT_LIBNAME}.${MAJOR_VERSION}
 LDFLAGS_FMT += -Wl,-install_name,${LIB_FMT_LIBNAME}.${MAJOR_VERSION}
 LDFLAGS_STRALLOC += -Wl,-install_name,${LIB_STRALLOC_LIBNAME}.${MAJOR_VERSION}
 LDFLAGS_TAI += -Wl,-install_name,${LIB_TAI_LIBNAME}.${MAJOR_VERSION}
+LDFLAGS_TAIA += -Wl,-install_name,${LIB_TAIA_LIBNAME}.${MAJOR_VERSION}
 
 else ifeq ($(OSTYPE),CYGWIN_NT)
 
@@ -195,12 +207,13 @@ LDFLAGS_UINT += -Wl,--out-implib=${blddir}/lib$(LIB_UINT).${LIBNAME_EXT}.a
 LDFLAGS_FMT += -Wl,--out-implib=${blddir}/lib$(LIB_FMT).${LIBNAME_EXT}.a
 LDFLAGS_STRALLOC += -Wl,--out-implib=${blddir}/lib$(LIB_STRALLOC).${LIBNAME_EXT}.a
 LDFLAGS_TAI += -Wl,--out-implib=${blddir}/lib$(LIB_TAI).${LIBNAME_EXT}.a
+LDFLAGS_TAIA += -Wl,--out-implib=${blddir}/lib$(LIB_TAIA).${LIBNAME_EXT}.a
 
 endif
 
 all: build
 
-build: | mkdir ${LIB_STR_TARGET} ${LIB_BYTE_TARGET} ${LIB_UINT_TARGET} ${LIB_FMT_TARGET} ${LIB_STRALLOC_TARGET} ${LIB_TAI_TARGET}
+build: | mkdir ${LIB_STR_TARGET} ${LIB_BYTE_TARGET} ${LIB_UINT_TARGET} ${LIB_FMT_TARGET} ${LIB_STRALLOC_TARGET} ${LIB_TAI_TARGET} ${LIB_TAIA_TARGET}
 
 ${LIB_STR}: | mkdir ${LIB_STR_TARGET}
 
@@ -213,6 +226,8 @@ ${LIB_FMT}: | mkdir ${LIB_BYTE_TARGET} ${LIB_FMT_TARGET}
 ${LIB_STRALLOC}: | mkdir ${LIB_BYTE_TARGET} ${LIB_STR_TARGET} ${LIB_FMT_TARGET} ${LIB_STRALLOC_TARGET}
 
 ${LIB_TAI}: | mkdir ${LIB_TAI_TARGET}
+
+${LIB_TAIA}: | mkdir ${LIB_TAIA_TARGET}
 
 clean:
 	rm -rf ${blddir}/*
@@ -252,6 +267,11 @@ ${LIB_TAI_TARGET}: ${SOURCE_FILES_TAI} ${HEADERS_TAI}
 	-ln -s ${LIB_TAI_LIBNAME}.${VERSION}  ${blddir}/${LIB_TAI_LIBNAME}.${MAJOR_VERSION}
 	-ln -s ${LIB_TAI_LIBNAME}.${MAJOR_VERSION} ${blddir}/${LIB_TAI_LIBNAME}
 
+${LIB_TAIA_TARGET}: ${SOURCE_FILES_TAIA} ${HEADERS_TAIA}
+	${CC} ${CCFLAGS_SO_TAIA} -o $@ ${SOURCE_FILES_TAIA} ${LDFLAGS_TAIA}
+	-ln -s ${LIB_TAIA_LIBNAME}.${VERSION}  ${blddir}/${LIB_TAIA_LIBNAME}.${MAJOR_VERSION}
+	-ln -s ${LIB_TAIA_LIBNAME}.${MAJOR_VERSION} ${blddir}/${LIB_TAIA_LIBNAME}
+
 strip_options:
 	$(eval INSTALL_OPTS := -s)
 
@@ -266,6 +286,7 @@ install: build
 	$(INSTALL_DATA) ${INSTALL_OPTS} ${LIB_FMT_TARGET} $(DESTDIR)${libdir}
 	$(INSTALL_DATA) ${INSTALL_OPTS} ${LIB_STRALLOC_TARGET} $(DESTDIR)${libdir}
 	$(INSTALL_DATA) ${INSTALL_OPTS} ${LIB_TAI_TARGET} $(DESTDIR)${libdir}
+	$(INSTALL_DATA) ${INSTALL_OPTS} ${LIB_TAIA_TARGET} $(DESTDIR)${libdir}
 ifeq ($(OSTYPE),CYGWIN_NT)
 	ln -fs ${LIB_STR_LIBNAME}.${VERSION}  $(DESTDIR)${libdir}/${LIB_STR_LIBNAME}.${MAJOR_VERSION}
 	ln -fs ${LIB_BYTE_LIBNAME}.${VERSION}  $(DESTDIR)${libdir}/${LIB_BYTE_LIBNAME}.${MAJOR_VERSION}
@@ -273,6 +294,7 @@ ifeq ($(OSTYPE),CYGWIN_NT)
 	ln -fs ${LIB_FMT_LIBNAME}.${VERSION}  $(DESTDIR)${libdir}/${LIB_FMT_LIBNAME}.${MAJOR_VERSION}
 	ln -fs ${LIB_STRALLOC_LIBNAME}.${VERSION}  $(DESTDIR)${libdir}/${LIB_STRALLOC_LIBNAME}.${MAJOR_VERSION}
 	ln -fs ${LIB_TAI_LIBNAME}.${VERSION}  $(DESTDIR)${libdir}/${LIB_TAI_LIBNAME}.${MAJOR_VERSION}
+	ln -fs ${LIB_TAIA_LIBNAME}.${VERSION}  $(DESTDIR)${libdir}/${LIB_TAIA_LIBNAME}.${MAJOR_VERSION}
 	$(INSTALL_DATA) ${blddir}/lib*.dll.a $(DESTDIR)${libdir}
 else
 	/sbin/ldconfig $(DESTDIR)${libdir}
@@ -283,12 +305,14 @@ endif
 	ln -fs ${LIB_FMT_LIBNAME}.${MAJOR_VERSION} $(DESTDIR)${libdir}/${LIB_FMT_LIBNAME}
 	ln -fs ${LIB_STRALLOC_LIBNAME}.${MAJOR_VERSION} $(DESTDIR)${libdir}/${LIB_STRALLOC_LIBNAME}
 	ln -fs ${LIB_TAI_LIBNAME}.${MAJOR_VERSION} $(DESTDIR)${libdir}/${LIB_TAI_LIBNAME}
+	ln -fs ${LIB_TAIA_LIBNAME}.${MAJOR_VERSION} $(DESTDIR)${libdir}/${LIB_TAIA_LIBNAME}
 	$(INSTALL_DATA) ${HEADERS_STR} $(DESTDIR)${includedir}
 	$(INSTALL_DATA) ${HEADERS_BYTE} $(DESTDIR)${includedir}
 	$(INSTALL_DATA) ${HEADERS_UINT} $(DESTDIR)${includedir}
 	$(INSTALL_DATA) ${HEADERS_FMT} $(DESTDIR)${includedir}
 	$(INSTALL_DATA) ${HEADERS_STRALLOC} $(DESTDIR)${includedir}
 	$(INSTALL_DATA) ${HEADERS_TAI} $(DESTDIR)${includedir}
+	$(INSTALL_DATA) ${HEADERS_TAIA} $(DESTDIR)${includedir}
 
 uninstall:
 	rm -f $(DESTDIR)${libdir}/${LIB_STR_LIBNAME}.*
@@ -297,6 +321,7 @@ uninstall:
 	rm -f $(DESTDIR)${libdir}/${LIB_FMT_LIBNAME}.*
 	rm -f $(DESTDIR)${libdir}/${LIB_STRALLOC_LIBNAME}.*
 	rm -f $(DESTDIR)${libdir}/${LIB_TAI_LIBNAME}.*
+	rm -f $(DESTDIR)${libdir}/${LIB_TAIA_LIBNAME}.*
 ifeq ($(OSTYPE),CYGWIN_NT)
 	rm -f $(DESTDIR)${libdir}/*${LIB_STR}*.dll.a
 	rm -f $(DESTDIR)${libdir}/*${LIB_BYTE}*.dll.a
@@ -304,6 +329,7 @@ ifeq ($(OSTYPE),CYGWIN_NT)
 	rm -f $(DESTDIR)${libdir}/*${LIB_FMT}*.dll.a
 	rm -f $(DESTDIR)${libdir}/*${LIB_STRALLOC}*.dll.a
 	rm -f $(DESTDIR)${libdir}/*${LIB_TAI}*.dll.a
+	rm -f $(DESTDIR)${libdir}/*${LIB_TAIA}*.dll.a
 else
 	/sbin/ldconfig $(DESTDIR)${libdir}
 endif
@@ -313,12 +339,14 @@ endif
 	rm -f $(DESTDIR)${libdir}/${LIB_FMT_LIBNAME}
 	rm -f $(DESTDIR)${libdir}/${LIB_STRALLOC_LIBNAME}
 	rm -f $(DESTDIR)${libdir}/${LIB_TAI_LIBNAME}
+	rm -f $(DESTDIR)${libdir}/${LIB_TAIA_LIBNAME}
 	rm -f $(DESTDIR)${includedir}/${HEADERS_STR}
 	rm -f $(DESTDIR)${includedir}/${HEADERS_BYTE}
 	rm -f $(DESTDIR)${includedir}/${HEADERS_UINT}
 	rm -f $(DESTDIR)${includedir}/${HEADERS_FMT}
 	rm -f $(DESTDIR)${includedir}/${HEADERS_STRALLOC}
 	rm -f $(DESTDIR)${includedir}/${HEADERS_TAI}
+	rm -f $(DESTDIR)${includedir}/${HEADERS_TAIA}
 
 html:
 	-mkdir -p ${blddir}/doc
