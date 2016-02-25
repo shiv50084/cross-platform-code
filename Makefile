@@ -5,8 +5,11 @@ ifndef release.version
     release.version = 0.0.1
 endif
 
-# TODO
+# TODO list
 # * Static libraries instead of shared?
+# * This file is getting big, maybe it's
+#   a good idea to split. Create a Makefile
+#   for each library.
 
 SYSTEM := $(shell uname -s)
 MACHINE := $(shell uname -m)
