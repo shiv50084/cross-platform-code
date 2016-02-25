@@ -60,17 +60,20 @@ SOURCE_FILES_STR = $(wildcard $(srcdir)/lib/str/*.c)
 SOURCE_FILES_BYTE = $(wildcard $(srcdir)/lib/byte/*.c)
 SOURCE_FILES_UINT = $(wildcard $(srcdir)/lib/uint/*.c)
 SOURCE_FILES_FMT = $(wildcard $(srcdir)/lib/fmt/*.c)
+SOURCE_FILES_STRALLOC = $(wildcard $(srcdir)/lib/stralloc/*.c)
 
 HEADERS_STR = $(incdir)/str/*.h
 HEADERS_BYTE = $(incdir)/byte/*.h
 HEADERS_UINT = $(incdir)/uint/*.h
 HEADERS_FMT = $(incdir)/fmt/*.h
+HEADERS_STRALLOC = $(incdir)/stralloc/*.h
 
 # The names of the libraries to be built
 LIB_STR = str
 LIB_BYTE = byte
 LIB_UINT = uint
 LIB_FMT = fmt
+LIB_STRALLOC = stralloc
 
 CC ?= gcc
 
@@ -107,11 +110,13 @@ LIB_STR_LIBNAME = ${LIBNAME_PREFIX}${LIB_STR}.${LIBNAME_EXT}
 LIB_BYTE_LIBNAME = ${LIBNAME_PREFIX}${LIB_BYTE}.${LIBNAME_EXT}
 LIB_UINT_LIBNAME = ${LIBNAME_PREFIX}${LIB_UINT}.${LIBNAME_EXT}
 LIB_FMT_LIBNAME = ${LIBNAME_PREFIX}${LIB_FMT}.${LIBNAME_EXT}
+LIB_STRALLOC_LIBNAME = ${LIBNAME_PREFIX}${LIB_STRALLOC}.${LIBNAME_EXT}
 
 LIB_STR_TARGET = ${blddir}/${LIB_STR_LIBNAME}.${VERSION}
 LIB_BYTE_TARGET = ${blddir}/${LIB_BYTE_LIBNAME}.${VERSION}
 LIB_UINT_TARGET = ${blddir}/${LIB_UINT_LIBNAME}.${VERSION}
 LIB_FMT_TARGET = ${blddir}/${LIB_FMT_LIBNAME}.${VERSION}
+LIB_STRALLOC_TARGET = ${blddir}/${LIB_STRALLOC_LIBNAME}.${VERSION}
 
 #FLAGS_EXE = $(LDFLAGS) -I ${incdir} -lpthread -L ${blddir}
 #FLAGS_EXES = $(LDFLAGS) -I ${incdir} ${START_GROUP} -lpthread -lssl -lcrypto ${END_GROUP} -L ${blddir}
@@ -123,19 +128,23 @@ CCFLAGS_SO_STR = -g $(CFLAGS) -I $(incdir)/str/ -Os -Wall -fvisibility=hidden
 CCFLAGS_SO_BYTE = -g $(CFLAGS) -I $(incdir)/byte/ -Os -Wall -fvisibility=hidden
 CCFLAGS_SO_UINT = -g $(CFLAGS) -I $(incdir)/uint/ -Os -Wall -fvisibility=hidden
 CCFLAGS_SO_FMT = -g $(CFLAGS) -I $(incdir)/byte/ -I $(incdir)/fmt/ -Os -Wall -fvisibility=hidden
+CCFLAGS_SO_STRALLOC = -g $(CFLAGS) -I $(incdir)/byte/ -I $(incdir)/str/ -I $(incdir)/fmt/ -I $(incdir)/stralloc/ -Os -Wall -fvisibility=hidden
 LDFLAGS_STR = $(LDFLAGS) -shared -Wl,--no-whole-archive -lpthread $(LDFLAGS_CYGWIN)
 LDFLAGS_BYTE = $(LDFLAGS) -shared -Wl,--no-whole-archive -lpthread $(LDFLAGS_CYGWIN)
 LDFLAGS_UINT = $(LDFLAGS) -shared -Wl,--no-whole-archive -lpthread $(LDFLAGS_CYGWIN)
 LDFLAGS_FMT = $(LDFLAGS) -shared -Wl,--no-whole-archive -L ${blddir} -lbyte -lpthread $(LDFLAGS_CYGWIN)
+LDFLAGS_STRALLOC = $(LDFLAGS) -shared -Wl,--no-whole-archive -L ${blddir} -lbyte -lstr -lfmt -lpthread $(LDFLAGS_CYGWIN)
 else
 CCFLAGS_SO_STR = -g -fPIC $(CFLAGS) -I $(incdir)/str/ -Os -Wall -fvisibility=hidden
 CCFLAGS_SO_BYTE = -g -fPIC $(CFLAGS) -I $(incdir)/byte/ -Os -Wall -fvisibility=hidden
 CCFLAGS_SO_UINT = -g -fPIC $(CFLAGS) -I $(incdir)/uint/ -Os -Wall -fvisibility=hidden
 CCFLAGS_SO_FMT = -g -fPIC $(CFLAGS) -I $(incdir)/byte/ -I $(incdir)/fmt/ -Os -Wall -fvisibility=hidden
+CCFLAGS_SO_STRALLOC = -g -fPIC $(CFLAGS) -I $(incdir)/byte/ -I $(incdir)/str/ -I $(incdir)/fmt/ -I $(incdir)/stralloc/ -Os -Wall -fvisibility=hidden
 LDFLAGS_STR = $(LDFLAGS) -shared -lpthread
 LDFLAGS_BYTE = $(LDFLAGS) -shared -lpthread
 LDFLAGS_UINT = $(LDFLAGS) -shared -lpthread
 LDFLAGS_FMT = $(LDFLAGS) -shared -lpthread
+LDFLAGS_STRALLOC = $(LDFLAGS) -shared -lpthread
 endif
 
 ifeq ($(OSTYPE),Linux)
@@ -146,6 +155,7 @@ LDFLAGS_STR += -Wl,-soname,${LIB_STR_LIBNAME}.${MAJOR_VERSION}
 LDFLAGS_BYTE += -Wl,-soname,${LIB_BYTE_LIBNAME}.${MAJOR_VERSION}
 LDFLAGS_UINT += -Wl,-soname,${LIB_UINT_LIBNAME}.${MAJOR_VERSION}
 LDFLAGS_FMT += -Wl,-soname,${LIB_FMT_LIBNAME}.${MAJOR_VERSION}
+LDFLAGS_STRALLOC += -Wl,-soname,${LIB_STRALLOC_LIBNAME}.${MAJOR_VERSION}
 
 else ifeq ($(OSTYPE),Darwin)
 
@@ -155,10 +165,12 @@ CCFLAGS_SO_STR += -dynamiclib -Wno-deprecated-declarations -undefined dynamic_lo
 CCFLAGS_SO_BYTE += -dynamiclib -Wno-deprecated-declarations -undefined dynamic_lookup -DUSE_NAMED_SEMAPHORES
 CCFLAGS_SO_UINT += -dynamiclib -Wno-deprecated-declarations -undefined dynamic_lookup -DUSE_NAMED_SEMAPHORES
 CCFLAGS_SO_FMT += -dynamiclib -Wno-deprecated-declarations -undefined dynamic_lookup -DUSE_NAMED_SEMAPHORES
+CCFLAGS_SO_STRALLOC += -dynamiclib -Wno-deprecated-declarations -undefined dynamic_lookup -DUSE_NAMED_SEMAPHORES
 LDFLAGS_STR += -Wl,-install_name,${LIB_STR_LIBNAME}.${MAJOR_VERSION}
 LDFLAGS_BYTE += -Wl,-install_name,${LIB_BYTE_LIBNAME}.${MAJOR_VERSION}
 LDFLAGS_UINT += -Wl,-install_name,${LIB_UINT_LIBNAME}.${MAJOR_VERSION}
 LDFLAGS_FMT += -Wl,-install_name,${LIB_FMT_LIBNAME}.${MAJOR_VERSION}
+LDFLAGS_STRALLOC += -Wl,-install_name,${LIB_STRALLOC_LIBNAME}.${MAJOR_VERSION}
 
 else ifeq ($(OSTYPE),CYGWIN_NT)
 
@@ -166,12 +178,13 @@ LDFLAGS_STR += -Wl,--out-implib=${blddir}/lib$(LIB_STR).${LIBNAME_EXT}.a
 LDFLAGS_BYTE += -Wl,--out-implib=${blddir}/lib$(LIB_BYTE).${LIBNAME_EXT}.a
 LDFLAGS_UINT += -Wl,--out-implib=${blddir}/lib$(LIB_UINT).${LIBNAME_EXT}.a
 LDFLAGS_FMT += -Wl,--out-implib=${blddir}/lib$(LIB_FMT).${LIBNAME_EXT}.a
+LDFLAGS_STRALLOC += -Wl,--out-implib=${blddir}/lib$(LIB_STRALLOC).${LIBNAME_EXT}.a
 
 endif
 
 all: build
 
-build: | mkdir ${LIB_STR_TARGET} ${LIB_BYTE_TARGET} ${LIB_UINT_TARGET} ${LIB_FMT_TARGET}
+build: | mkdir ${LIB_STR_TARGET} ${LIB_BYTE_TARGET} ${LIB_UINT_TARGET} ${LIB_FMT_TARGET} ${LIB_STRALLOC_TARGET}
 
 ${LIB_STR}: | mkdir ${LIB_STR_TARGET}
 
@@ -180,6 +193,8 @@ ${LIB_BYTE}: | mkdir ${LIB_BYTE_TARGET}
 ${LIB_UINT}: | mkdir ${LIB_UINT_TARGET}
 
 ${LIB_FMT}: | mkdir ${LIB_BYTE_TARGET} ${LIB_FMT_TARGET}
+
+${LIB_STRALLOC}: | mkdir ${LIB_BYTE_TARGET} ${LIB_STR_TARGET} ${LIB_FMT_TARGET} ${LIB_STRALLOC_TARGET}
 
 clean:
 	rm -rf ${blddir}/*
@@ -209,6 +224,11 @@ ${LIB_FMT_TARGET}: ${SOURCE_FILES_FMT} ${HEADERS_FMT}
 	-ln -s ${LIB_FMT_LIBNAME}.${VERSION}  ${blddir}/${LIB_FMT_LIBNAME}.${MAJOR_VERSION}
 	-ln -s ${LIB_FMT_LIBNAME}.${MAJOR_VERSION} ${blddir}/${LIB_FMT_LIBNAME}
 
+${LIB_STRALLOC_TARGET}: ${SOURCE_FILES_STRALLOC} ${HEADERS_STRALLOC}
+	${CC} ${CCFLAGS_SO_STRALLOC} -o $@ ${SOURCE_FILES_STRALLOC} ${LDFLAGS_STRALLOC}
+	-ln -s ${LIB_STRALLOC_LIBNAME}.${VERSION}  ${blddir}/${LIB_STRALLOC_LIBNAME}.${MAJOR_VERSION}
+	-ln -s ${LIB_STRALLOC_LIBNAME}.${MAJOR_VERSION} ${blddir}/${LIB_STRALLOC_LIBNAME}
+
 strip_options:
 	$(eval INSTALL_OPTS := -s)
 
@@ -221,11 +241,13 @@ install: build
 	$(INSTALL_DATA) ${INSTALL_OPTS} ${LIB_BYTE_TARGET} $(DESTDIR)${libdir}
 	$(INSTALL_DATA) ${INSTALL_OPTS} ${LIB_UINT_TARGET} $(DESTDIR)${libdir}
 	$(INSTALL_DATA) ${INSTALL_OPTS} ${LIB_FMT_TARGET} $(DESTDIR)${libdir}
+	$(INSTALL_DATA) ${INSTALL_OPTS} ${LIB_STRALLOC_TARGET} $(DESTDIR)${libdir}
 ifeq ($(OSTYPE),CYGWIN_NT)
 	ln -fs ${LIB_STR_LIBNAME}.${VERSION}  $(DESTDIR)${libdir}/${LIB_STR_LIBNAME}.${MAJOR_VERSION}
 	ln -fs ${LIB_BYTE_LIBNAME}.${VERSION}  $(DESTDIR)${libdir}/${LIB_BYTE_LIBNAME}.${MAJOR_VERSION}
 	ln -fs ${LIB_UINT_LIBNAME}.${VERSION}  $(DESTDIR)${libdir}/${LIB_UINT_LIBNAME}.${MAJOR_VERSION}
 	ln -fs ${LIB_FMT_LIBNAME}.${VERSION}  $(DESTDIR)${libdir}/${LIB_FMT_LIBNAME}.${MAJOR_VERSION}
+	ln -fs ${LIB_STRALLOC_LIBNAME}.${VERSION}  $(DESTDIR)${libdir}/${LIB_STRALLOC_LIBNAME}.${MAJOR_VERSION}
 	$(INSTALL_DATA) ${blddir}/lib*.dll.a $(DESTDIR)${libdir}
 else
 	/sbin/ldconfig $(DESTDIR)${libdir}
@@ -234,21 +256,25 @@ endif
 	ln -fs ${LIB_BYTE_LIBNAME}.${MAJOR_VERSION} $(DESTDIR)${libdir}/${LIB_BYTE_LIBNAME}
 	ln -fs ${LIB_UINT_LIBNAME}.${MAJOR_VERSION} $(DESTDIR)${libdir}/${LIB_UINT_LIBNAME}
 	ln -fs ${LIB_FMT_LIBNAME}.${MAJOR_VERSION} $(DESTDIR)${libdir}/${LIB_FMT_LIBNAME}
+	ln -fs ${LIB_STRALLOC_LIBNAME}.${MAJOR_VERSION} $(DESTDIR)${libdir}/${LIB_STRALLOC_LIBNAME}
 	$(INSTALL_DATA) ${HEADERS_STR} $(DESTDIR)${includedir}
 	$(INSTALL_DATA) ${HEADERS_BYTE} $(DESTDIR)${includedir}
 	$(INSTALL_DATA) ${HEADERS_UINT} $(DESTDIR)${includedir}
 	$(INSTALL_DATA) ${HEADERS_FMT} $(DESTDIR)${includedir}
+	$(INSTALL_DATA) ${HEADERS_STRALLOC} $(DESTDIR)${includedir}
 
 uninstall:
 	rm -f $(DESTDIR)${libdir}/${LIB_STR_LIBNAME}.*
 	rm -f $(DESTDIR)${libdir}/${LIB_BYTE_LIBNAME}.*
 	rm -f $(DESTDIR)${libdir}/${LIB_UINT_LIBNAME}.*
 	rm -f $(DESTDIR)${libdir}/${LIB_FMT_LIBNAME}.*
+	rm -f $(DESTDIR)${libdir}/${LIB_STRALLOC_LIBNAME}.*
 ifeq ($(OSTYPE),CYGWIN_NT)
 	rm -f $(DESTDIR)${libdir}/*${LIB_STR}*.dll.a
 	rm -f $(DESTDIR)${libdir}/*${LIB_BYTE}*.dll.a
 	rm -f $(DESTDIR)${libdir}/*${LIB_UINT}*.dll.a
 	rm -f $(DESTDIR)${libdir}/*${LIB_FMT}*.dll.a
+	rm -f $(DESTDIR)${libdir}/*${LIB_STRALLOC}*.dll.a
 else
 	/sbin/ldconfig $(DESTDIR)${libdir}
 endif
@@ -256,10 +282,12 @@ endif
 	rm -f $(DESTDIR)${libdir}/${LIB_BYTE_LIBNAME}
 	rm -f $(DESTDIR)${libdir}/${LIB_UINT_LIBNAME}
 	rm -f $(DESTDIR)${libdir}/${LIB_FMT_LIBNAME}
+	rm -f $(DESTDIR)${libdir}/${LIB_STRALLOC_LIBNAME}
 	rm -f $(DESTDIR)${includedir}/${HEADERS_STR}
 	rm -f $(DESTDIR)${includedir}/${HEADERS_BYTE}
 	rm -f $(DESTDIR)${includedir}/${HEADERS_UINT}
 	rm -f $(DESTDIR)${includedir}/${HEADERS_FMT}
+	rm -f $(DESTDIR)${includedir}/${HEADERS_STRALLOC}
 
 html:
 	-mkdir -p ${blddir}/doc
