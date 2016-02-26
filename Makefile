@@ -150,7 +150,7 @@ LDFLAGS_UINT = $(LDFLAGS) -shared -Wl,--no-whole-archive -lpthread $(LDFLAGS_CYG
 LDFLAGS_FMT = $(LDFLAGS) -shared -Wl,--no-whole-archive -L ${blddir} -lbyte -lpthread $(LDFLAGS_CYGWIN)
 LDFLAGS_STRALLOC = $(LDFLAGS) -shared -Wl,--no-whole-archive -L ${blddir} -lbyte -lstr -lfmt -lpthread $(LDFLAGS_CYGWIN)
 LDFLAGS_TAI = $(LDFLAGS) -shared -Wl,--no-whole-archive -L ${blddir} -lpthread $(LDFLAGS_CYGWIN)
-LDFLAGS_TAIA = $(LDFLAGS) -shared -Wl,--no-whole-archive -L ${blddir} -lpthread $(LDFLAGS_CYGWIN)
+LDFLAGS_TAIA = $(LDFLAGS) -shared -Wl,--no-whole-archive -L ${blddir} -ltai -lpthread $(LDFLAGS_CYGWIN)
 else
 CCFLAGS_SO_STR = -g -fPIC $(CFLAGS) -I $(incdir)/str/ -Os -Wall -fvisibility=hidden
 CCFLAGS_SO_BYTE = -g -fPIC $(CFLAGS) -I $(incdir)/byte/ -Os -Wall -fvisibility=hidden
@@ -227,7 +227,7 @@ ${LIB_STRALLOC}: | mkdir ${LIB_BYTE_TARGET} ${LIB_STR_TARGET} ${LIB_FMT_TARGET} 
 
 ${LIB_TAI}: | mkdir ${LIB_TAI_TARGET}
 
-${LIB_TAIA}: | mkdir ${LIB_TAIA_TARGET}
+${LIB_TAIA}: | mkdir ${LIB_TAI_TARGET} ${LIB_TAIA_TARGET}
 
 clean:
 	rm -rf ${blddir}/*
